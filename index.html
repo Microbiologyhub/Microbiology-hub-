@@ -1,0 +1,432 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microbiology Hub</title>
+<style>
+:root {
+  --navy:#102b46;
+  --teal:#087f8c;
+  --light:#f1f7f8;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--light);
+  color:#243447;
+}
+header{
+  background:var(--navy);
+  color:white;
+  padding:22px 6%;
+}
+header h1{margin:0;font-size:27px}
+header p{margin:7px 0 0;color:#c8e5e9}
+nav{
+  display:flex;
+  gap:8px;
+  padding:12px 5%;
+  background:white;
+  overflow-x:auto;
+  position:sticky;
+  top:0;
+  z-index:5;
+  box-shadow:0 2px 8px #0001;
+}
+nav button{
+  border:0;
+  background:#edf3f5;
+  padding:11px 16px;
+  border-radius:8px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+nav button.active{background:var(--teal);color:white}
+main{max-width:1100px;margin:auto;padding:25px 18px}
+.hero{
+  background:linear-gradient(120deg,#102b46,#087f8c);
+  color:white;
+  padding:35px 25px;
+  border-radius:15px;
+  margin-bottom:25px;
+}
+.hero h2{font-size:30px;margin:0 0 12px}
+.hero p{line-height:1.7}
+h2,h3{color:var(--navy)}
+.search{
+  width:100%;
+  padding:15px;
+  border:1px solid #ccd9df;
+  border-radius:9px;
+  font-size:16px;
+  margin:12px 0 20px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 3px 12px #102b4610;
+}
+.card h3{margin-top:0}
+.tag{
+  display:inline-block;
+  background:#e1f3f3;
+  color:#087f8c;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+}
+button{
+  cursor:pointer;
+}
+.action{
+  background:var(--teal);
+  color:white;
+  border:0;
+  border-radius:7px;
+  padding:11px 15px;
+  margin:5px 3px 5px 0;
+}
+.secondary{
+  background:#e8eff2;
+  color:var(--navy);
+  border:0;
+  border-radius:7px;
+  padding:11px 15px;
+}
+.section{display:none}
+.section.active{display:block}
+.profile{
+  background:white;
+  padding:22px;
+  border-radius:12px;
+  line-height:1.7;
+}
+.profile h2{margin-top:0}
+.profile h3{margin-bottom:3px}
+.compare-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+select{
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ccd9df;
+  margin:8px 0 15px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  margin-top:15px;
+}
+td,th{
+  padding:12px;
+  border:1px solid #dce5e9;
+  text-align:left;
+  vertical-align:top;
+}
+th{background:#e5f1f2}
+footer{
+  background:var(--navy);
+  color:white;
+  padding:25px;
+  text-align:center;
+  margin-top:40px;
+}
+.small{font-size:13px;color:#687b89}
+@media(max-width:550px){
+  .compare-grid{grid-template-columns:1fr}
+  .hero h2{font-size:24px}
+  td,th{padding:8px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🧫 Microbiology Hub</h1>
+<p>Discover. Explore. Understand Microorganisms.</p>
+</header>
+
+<nav>
+<button class="active" onclick="showPage('home',this)">Home</button>
+<button onclick="showPage('explore',this)">Explore</button>
+<button onclick="showPage('compare',this)">Compare</button>
+<button onclick="showPage('learn',this)">Learn</button>
+<button onclick="showPage('saved',this)">Saved</button>
+</nav>
+
+<main>
+
+<section id="home" class="section active">
+<div class="hero">
+<h2>Welcome to Microbiology Hub</h2>
+<p>Your learning space for discovering microorganisms, understanding their characteristics and exploring their importance in health, science and the environment.</p>
+<button class="action" onclick="showPage('explore',document.querySelectorAll('nav button')[1])">Explore Organisms</button>
+</div>
+<h2>What you'll discover</h2>
+<div class="grid">
+<div class="card"><h3>🔬 Explore</h3><p>Discover different microorganisms and their scientific characteristics.</p></div>
+<div class="card"><h3>📊 Compare</h3><p>Compare microorganisms and understand their similarities and differences.</p></div>
+<div class="card"><h3>📚 Learn</h3><p>Build your understanding of microbiology concepts.</p></div>
+<div class="card"><h3>⭐ Saved</h3><p>Keep your favourite organism profiles for revision.</p></div>
+</div>
+</section>
+
+<section id="explore" class="section">
+<h2>Explore Microorganisms</h2>
+<p>Search the database by organism name or classification.</p>
+<input class="search" id="search" placeholder="Search microorganisms..." oninput="renderOrganisms()">
+<div class="grid" id="organismList"></div>
+</section>
+
+<section id="profile" class="section">
+<button class="secondary" onclick="showPage('explore',document.querySelectorAll('nav button')[1])">← Back to Explore</button>
+<div id="profileContent" class="profile"></div>
+</section>
+
+<section id="compare" class="section">
+<h2>Compare Microorganisms</h2>
+<p>Select two organisms to compare their scientific characteristics.</p>
+<div class="compare-grid">
+<div>
+<label>First organism</label>
+<select id="first"></select>
+</div>
+<div>
+<label>Second organism</label>
+<select id="second"></select>
+</div>
+</div>
+<button class="action" onclick="compareOrganisms()">Compare Now</button>
+<div id="comparison"></div>
+</section>
+
+<section id="learn" class="section">
+<h2>Microbiology Learning Centre</h2>
+<div class="grid">
+<div class="card">
+<h3>What is Microbiology?</h3>
+<p>Microbiology is the scientific study of microorganisms, including bacteria, viruses, fungi, protozoa and microscopic algae.</p>
+</div>
+<div class="card">
+<h3>Classification</h3>
+<p>Microorganisms can be grouped according to their cellular structure, characteristics and evolutionary relationships.</p>
+</div>
+<div class="card">
+<h3>Gram Staining</h3>
+<p>Gram staining is a differential staining technique used to distinguish bacteria into Gram-positive and Gram-negative groups.</p>
+</div>
+<div class="card">
+<h3>Microbial Growth</h3>
+<p>Microbial growth refers to an increase in the number of microbial cells in a population. It is influenced by nutrients, temperature, pH and other environmental conditions.</p>
+</div>
+</div>
+</section>
+
+<section id="saved" class="section">
+<h2>Saved Organisms ⭐</h2>
+<div class="grid" id="savedList"></div>
+</section>
+
+</main>
+
+<footer>
+<strong>Microbiology Hub</strong>
+<p>Making microbiology easier to explore and understand.</p>
+<p class="small">Educational resource. Scientific information should be checked against current authoritative references.</p>
+</footer>
+
+<script>
+const organisms = [
+{
+name:"Staphylococcus aureus",
+type:"Bacterium",
+gram:"Gram-positive",
+morphology:"Spherical cocci",
+arrangement:"Clusters resembling grapes",
+classification:"Domain Bacteria; Phylum Bacillota; Class Bacilli",
+growth:"Facultative anaerobe; grows over a broad range of conditions. Often produces golden-yellow colonies.",
+biochemical:"Catalase-positive, coagulase-positive; commonly ferments mannitol.",
+habitat:"Human skin and mucous membranes, especially the nose.",
+importance:"Can cause skin infections, wound infections, pneumonia, bloodstream infections and food poisoning.",
+identification:"Gram-positive cocci in clusters, catalase-positive and coagulase-positive."
+},
+{
+name:"Escherichia coli",
+type:"Bacterium",
+gram:"Gram-negative",
+morphology:"Rod-shaped bacillus",
+arrangement:"Usually single cells",
+classification:"Domain Bacteria; Phylum Pseudomonadota; Class Gammaproteobacteria",
+growth:"Facultative anaerobe; grows readily on common laboratory media. Many strains produce pink colonies on MacConkey agar.",
+biochemical:"Usually lactose-fermenting, indole-positive, oxidase-negative and catalase-positive.",
+habitat:"Intestinal tract of humans and other warm-blooded animals.",
+importance:"Most strains are harmless intestinal residents, while certain strains cause diarrhoeal disease and urinary tract infections.",
+identification:"Gram-negative rods with characteristic biochemical and laboratory identification profiles."
+},
+{
+name:"Salmonella enterica serovar Typhi",
+type:"Bacterium",
+gram:"Gram-negative",
+morphology:"Rod-shaped bacillus",
+arrangement:"Usually single cells",
+classification:"Domain Bacteria; Phylum Pseudomonadota; Class Gammaproteobacteria",
+growth:"Facultative anaerobe; generally non-lactose-fermenting on MacConkey agar.",
+biochemical:"Usually motile, hydrogen sulfide-producing and urease-negative.",
+habitat:"Human host; humans are the main reservoir.",
+importance:"Causes typhoid fever, a systemic infectious disease.",
+identification:"Laboratory identification uses culture, biochemical testing and confirmatory methods."
+},
+{
+name:"Bacillus subtilis",
+type:"Bacterium",
+gram:"Gram-positive",
+morphology:"Rod-shaped bacillus",
+arrangement:"Single cells or chains",
+classification:"Domain Bacteria; Phylum Bacillota; Class Bacilli",
+growth:"Aerobic or facultatively anaerobic growth; forms endospores.",
+biochemical:"Catalase-positive; commonly hydrolyses starch.",
+habitat:"Soil, vegetation and other environmental locations.",
+importance:"Important in research, biotechnology and enzyme production; generally considered non-pathogenic.",
+identification:"Gram-positive rods, endospore formation and characteristic biochemical features."
+},
+{
+name:"Candida albicans",
+type:"Fungus (yeast)",
+gram:"Gram-positive appearance may occur on Gram stain; not classified as a bacterium.",
+morphology:"Oval budding yeast cells; can form pseudohyphae and true hyphae.",
+arrangement:"Individual budding cells and elongated filamentous forms.",
+classification:"Domain Eukaryota; Kingdom Fungi; Phylum Ascomycota.",
+growth:"Grows as yeast and filamentous forms depending on environmental conditions.",
+biochemical:"Can ferment and assimilate certain carbohydrates.",
+habitat:"Human mucosal surfaces, gastrointestinal tract and genital tract.",
+importance:"Can cause oral thrush, vaginal candidiasis and invasive candidiasis.",
+identification:"Microscopy, culture and validated laboratory identification methods."
+},
+{
+name:"Aspergillus niger",
+type:"Fungus (mould)",
+gram:"Not classified by Gram reaction.",
+morphology:"Filamentous fungus with septate hyphae and dark conidial heads.",
+arrangement:"Branching fungal hyphae.",
+classification:"Domain Eukaryota; Kingdom Fungi; Phylum Ascomycota.",
+growth:"Forms rapidly growing colonies, often dark brown to black when mature.",
+biochemical:"Produces extracellular enzymes including amylases and organic-acid-producing enzymes.",
+habitat:"Soil, decaying plant matter and indoor environments.",
+importance:"Used industrially for citric acid production; can occasionally cause opportunistic infections.",
+identification:"Colony morphology and microscopic examination of characteristic conidiophores and conidia."
+}
+];
+
+function showPage(id,button){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+if(button)button.classList.add('active');
+if(id==='saved')renderSaved();
+}
+
+function renderOrganisms(){
+const term=document.getElementById('search').value.toLowerCase();
+const results=organisms.filter(o=>
+(o.name+' '+o.type+' '+o.gram).toLowerCase().includes(term)
+);
+document.getElementById('organismList').innerHTML=results.length?
+results.map(o=>`
+<div class="card">
+<span class="tag">${o.type}</span>
+<h3>${o.name}</h3>
+<p>${o.gram}</p>
+<button class="action" onclick="openProfile('${o.name}')">View Profile</button>
+<button class="secondary" onclick="toggleSave('${o.name}')">☆ Save</button>
+</div>`).join(''):'<p>No matching organisms found.</p>';
+}
+
+function openProfile(name){
+const o=organisms.find(x=>x.name===name);
+if(!o)return;
+document.getElementById('profileContent').innerHTML=`
+<h2>${o.name}</h2>
+<span class="tag">${o.type}</span>
+${[
+['Classification',o.classification],
+['Morphology',o.morphology],
+['Gram reaction',o.gram],
+['Arrangement',o.arrangement],
+['General growth characteristics',o.growth],
+['Biochemical characteristics',o.biochemical],
+['Habitat',o.habitat],
+['Medical importance',o.importance],
+['Identification',o.identification]
+].map(([a,b])=>`<h3>${a}</h3><p>${b}</p>`).join('')}
+<button class="action" onclick="toggleSave('${o.name}')">☆ Save Organism</button>`;
+showPage('profile',null);
+}
+
+function getSaved(){
+try{return JSON.parse(localStorage.getItem('microbiologySaved')||'[]')}
+catch(e){return []}
+}
+function toggleSave(name){
+let saved=getSaved();
+if(saved.includes(name))saved=saved.filter(x=>x!==name);
+else saved.push(name);
+localStorage.setItem('microbiologySaved',JSON.stringify(saved));
+renderSaved();
+alert(saved.includes(name)?'Organism saved!':'Organism removed from saved list.');
+}
+function renderSaved(){
+const saved=getSaved();
+const list=organisms.filter(o=>saved.includes(o.name));
+document.getElementById('savedList').innerHTML=list.length?
+list.map(o=>`<div class="card"><h3>${o.name}</h3><button class="action" onclick="openProfile('${o.name}')">View Profile</button><button class="secondary" onclick="toggleSave('${o.name}')">Remove</button></div>`).join(''):
+'<p>You have not saved any organisms yet.</p>';
+}
+
+function setupCompare(){
+['first','second'].forEach(id=>{
+document.getElementById(id).innerHTML=organisms.map(o=>
+`<option value="${o.name}">${o.name}</option>`).join('');
+});
+}
+function compareOrganisms(){
+const a=organisms.find(o=>o.name===document.getElementById('first').value);
+const b=organisms.find(o=>o.name===document.getElementById('second').value);
+if(a.name===b.name){
+document.getElementById('comparison').innerHTML='<p>Please select two different organisms.</p>';
+return;
+}
+const fields=[
+['Type','type'],['Classification','classification'],
+['Morphology','morphology'],['Gram reaction','gram'],
+['Arrangement','arrangement'],['Growth characteristics','growth'],
+['Biochemical characteristics','biochemical'],
+['Habitat','habitat'],['Medical importance','importance'],
+['Identification','identification']
+];
+document.getElementById('comparison').innerHTML=`
+<h3>Comparison Results</h3>
+<table>
+<tr><th>Characteristic</th><th>${a.name}</th><th>${b.name}</th></tr>
+${fields.map(([label,key])=>`<tr><th>${label}</th><td>${a[key]}</td><td>${b[key]}</td></tr>`).join('')}
+</table>`;
+}
+
+renderOrganisms();
+setupCompare();
+</script>
+</body>
+</html>
