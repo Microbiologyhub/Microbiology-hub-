@@ -88,7 +88,7 @@ html.index
   <script src="script.js"></script>
 </body>
 </html>
-css
+style.css
 * {
   box-sizing: border-box;
   margin: 0;
@@ -269,3 +269,238 @@ th {
     padding: 0 12px;
   }
 }
+script.js
+const organisms = [
+  {
+    id: "staph",
+    name: "Staphylococcus aureus",
+    type: "Bacterium",
+    gram: "Gram-positive",
+    morphology: "Cocci arranged in grape-like clusters.",
+    growth: "Facultative anaerobe; grows under aerobic and anaerobic conditions.",
+    biochemical: "Catalase-positive, coagulase-positive, usually mannitol-fermenting.",
+    habitat: "Human skin and anterior nares.",
+    medical: "Can cause skin infections, pneumonia, bloodstream infections and food poisoning.",
+    identification: "Gram stain, catalase test, coagulase test and other laboratory identification methods."
+  },
+  {
+    id: "ecoli",
+    name: "Escherichia coli",
+    type: "Bacterium",
+    gram: "Gram-negative",
+    morphology: "Rod-shaped bacillus, usually occurring singly.",
+    growth: "Facultative anaerobe; many strains are motile.",
+    biochemical: "Usually lactose-fermenting, indole-positive and oxidase-negative.",
+    habitat: "Intestinal tract of humans and other warm-blooded animals.",
+    medical: "Some strains cause diarrhoeal disease and urinary tract infections.",
+    identification: "Gram stain, culture characteristics and biochemical identification."
+  },
+  {
+    id: "typhi",
+    name: "Salmonella enterica serovar Typhi",
+    type: "Bacterium",
+    gram: "Gram-negative",
+    morphology: "Rod-shaped bacillus, usually motile.",
+    growth: "Facultative anaerobe.",
+    biochemical: "Non-lactose-fermenting; usually produces hydrogen sulfide.",
+    habitat: "Human intestinal tract; may also persist in the gallbladder.",
+    medical: "Causes typhoid fever, a systemic infection.",
+    identification: "Laboratory identification using appropriate culture and confirmatory tests."
+  }
+];
+
+let currentPage = "home";
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.remove("active");
+  });
+
+  const target = document.getElementById(page);
+  if (!target) return;
+
+  target.classList.add("active");
+  currentPage = page;
+
+  if (page === "explore") searchOrganisms();
+  if (page === "saved") displaySaved();
+  if (page === "compare") populateCompare();
+}
+
+function searchOrganisms() {
+  const input = document.getElementById("searchInput");
+  const query = input.value.toLowerCase();
+
+  const results = organisms.filter(org =>
+    org.name.toLowerCase().includes(query) ||
+    org.type.toLowerCase().includes(query)
+  );
+
+  const list = document.getElementById("organismList");
+
+  if (results.length === 0) {
+    list.innerHTML = "<p>No organisms found. Try another search.</p>";
+    return;
+  }
+
+  list.innerHTML = results.map(org => `
+    <div class="organism-card">
+      <h3>${org.name}</h3>
+      <p>${org.type} · ${org.gram}</p>
+      <button onclick="openProfile('${org.id}')">View profile</button>
+    </div>
+  `).join("");
+}
+
+function openProfile(id) {
+  const org = organisms.find(item => item.id === id);
+  if (!org) return;
+
+  document.getElementById("profileContent").innerHTML = `
+    <h2>${org.name}</h2>
+    <p><strong>Type:</strong> ${org.type}</p>
+    <p><strong>Gram reaction:</strong> ${org.gram}</p>
+
+    <div class="profile-section">
+      <h3>Morphology</h3>
+      <p>${org.morphology}</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Growth characteristics</h3>
+      <p>${org.growth}</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Biochemical characteristics</h3>
+      <p>${org.biochemical}</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Habitat</h3>
+      <p>${org.habitat}</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Medical importance</h3>
+      <p>${org.medical}</p>
+    </div>
+
+    <div class="profile-section">
+      <h3>Identification</h3>
+      <p>${org.identification}</p>
+    </div>
+
+    <button onclick="saveOrganism('${org.id}')">Save organism</button>
+  `;
+
+  showPage("profile");
+}
+
+function getSaved() {
+  try {
+    return JSON.parse(localStorage.getItem("savedOrganisms")) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveOrganism(id) {
+  const saved = getSaved();
+
+  if (!saved.includes(id)) {
+    saved.push(id);
+    localStorage.setItem("savedOrganisms", JSON.stringify(saved));
+    alert("Organism saved!");
+  } else {
+    alert("This organism is already saved.");
+  }
+}
+
+function displaySaved() {
+  const saved = getSaved();
+  const list = document.getElementById("savedList");
+
+  const items = organisms.filter(org => saved.includes(org.id));
+
+  if (items.length === 0) {
+    list.innerHTML = "<p>You have not saved any organisms yet.</p>";
+    return;
+  }
+
+  list.innerHTML = items.map(org => `
+    <div class="organism-card">
+      <h3>${org.name}</h3>
+      <button onclick="openProfile('${org.id}')">View profile</button>
+      <button onclick="removeSaved('${org.id}')">Remove</button>
+    </div>
+  `).join("");
+}
+
+function removeSaved(id) {
+  const saved = getSaved().filter(item => item !== id);
+  localStorage.setItem("savedOrganisms", JSON.stringify(saved));
+  displaySaved();
+}
+
+function populateCompare() {
+  ["organismOne", "organismTwo"].forEach(selectId => {
+    const select = document.getElementById(selectId);
+    const previous = select.value;
+
+    select.innerHTML = organisms.map(org =>
+      `<option value="${org.id}">${org.name}</option>`
+    ).join("");
+
+    if (organisms.some(org => org.id === previous)) {
+      select.value = previous;
+    }
+  });
+}
+
+function compareOrganisms() {
+  const first = organisms.find(org =>
+    org.id === document.getElementById("organismOne").value
+  );
+
+  const second = organisms.find(org =>
+    org.id === document.getElementById("organismTwo").value
+  );
+
+  const result = document.getElementById("comparisonResult");
+
+  if (first.id === second.id) {
+    result.innerHTML = "<p>Please select two different organisms.</p>";
+    return;
+  }
+
+  const fields = [
+    ["Classification", "type"],
+    ["Gram reaction", "gram"],
+    ["Morphology", "morphology"],
+    ["Growth", "growth"],
+    ["Biochemical characteristics", "biochemical"],
+    ["Habitat", "habitat"],
+    ["Medical importance", "medical"],
+    ["Identification", "identification"]
+  ];
+
+  result.innerHTML = `
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>${first.name}</th>
+        <th>${second.name}</th>
+      </tr>
+      ${fields.map(([label, key]) => `
+        <tr>
+          <td>${label}</td>
+          <td>${first[key]}</td>
+          <td>${second[key]}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
+populateCompare();
